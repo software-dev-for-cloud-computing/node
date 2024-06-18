@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  node-app:
+    container_name: node-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      DB_HOST: mongodb
+      DB_PORT: 27017
+      DB_NAME: dev4cloud
+    depends_on:
+      - mongodb
+
+  mongodb:
+    container_name: mongodb-app
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - node_mongodb_data:/data/db
+
+volumes:
+  node_mongodb_data:
