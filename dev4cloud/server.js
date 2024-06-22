@@ -15,20 +15,15 @@ if (NODE_ENV === 'production') {
   DB_NAME = process.env.PROD_DB_NAME;
   DB_URI = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@${DB_USER}@`;
 } else {
-  DB_USER = process.env.DEV_DB_USER;
-  DB_PASSWORD = process.env.DEV_DB_PASSWORD;
-  DB_HOST = process.env.DEV_DB_HOST;
-  DB_PORT = process.env.DEV_DB_PORT;
-  DB_NAME = process.env.DEV_DB_NAME;
-  DB_URI = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+  DB_HOST = process.env.DB_HOST || "mongodb";
+  DB_PORT = process.env.DB_PORT || 27017;
+  DB_NAME = process.env.DB_NAME || "dev4cloud";
+  DB_URI = `mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`;
 }
 
 console.log(`Connecting to MongoDB at ${DB_URI}`);
 
-mongoose.connect(DB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
+mongoose.connect(DB_URI).then(() => {
   console.log('Connected to MongoDB');
   if (require.main === module) {
     app.listen(PORT, 'localhost', () => {
