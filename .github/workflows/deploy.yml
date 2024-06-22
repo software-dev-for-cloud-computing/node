@@ -34,3 +34,12 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             ${PACKAGE_URL} \
             -d '{"visibility":"public"}'
+
+      - name: Debugging API visibility
+        run: |
+          echo "Checking visibility of package..."
+          curl -X GET \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/orgs/${{ github.repository_owner }}/packages/container/node-app
+
