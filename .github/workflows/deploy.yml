@@ -24,13 +24,4 @@ jobs:
         run: |
           docker build -t ghcr.io/${{ github.repository_owner }}/node-app:latest .
           docker push ghcr.io/${{ github.repository_owner }}/node-app:latest
-
-      - name: Make Docker image public
-        run: |
-          IMAGE_URL="https://ghcr.io/v2/${{ github.repository_owner }}/node-app/tags/list"
-          PACKAGE_URL="https://api.github.com/user/packages/container/node-app/visibility"
-          curl -X PATCH \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: Bearer ${{ secrets.CR_PAT }}" \
-            ${PACKAGE_URL} \
-            -d '{"visibility":"public"}'
+        
