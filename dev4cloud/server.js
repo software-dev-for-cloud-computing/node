@@ -4,7 +4,6 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 5001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-
 let DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, DB_URI;
 
 if (NODE_ENV === 'production') {
