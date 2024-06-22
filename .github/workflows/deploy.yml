@@ -18,7 +18,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CR_PAT }}
 
       - name: Build and push Docker image
         run: |
@@ -31,6 +31,6 @@ jobs:
           PACKAGE_URL="https://api.github.com/user/packages/container/node-app/visibility"
           curl -X PATCH \
             -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.CR_PAT }}" \
             ${PACKAGE_URL} \
             -d '{"visibility":"public"}'
