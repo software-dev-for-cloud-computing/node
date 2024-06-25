@@ -4,19 +4,14 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 5001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
-let DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME, DB_URI;
+let DB_URI;
 
 if (NODE_ENV === 'production') {
-  DB_USER = process.env.PROD_DB_USER;
-  DB_PASSWORD = process.env.PROD_DB_PASSWORD;
-  DB_HOST = process.env.PROD_DB_HOST;
-  DB_PORT = process.env.PROD_DB_PORT;
-  DB_NAME = process.env.PROD_DB_NAME;
-  DB_URI = `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@${DB_USER}@`;
+  DB_URI = process.env.MONGODB_URI;
 } else {
-  DB_HOST = process.env.DB_HOST || "mongodb";
-  DB_PORT = process.env.DB_PORT || 27017;
-  DB_NAME = process.env.DB_NAME || "dev4cloud";
+  const DB_HOST = process.env.DB_HOST || "mongodb";
+  const DB_PORT = process.env.DB_PORT || 27017;
+  const DB_NAME = process.env.DB_NAME || "dev4cloud";
   DB_URI = `mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`;
 }
 
