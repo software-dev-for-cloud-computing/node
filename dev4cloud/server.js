@@ -20,7 +20,7 @@ console.log(`Connecting to MongoDB at ${DB_URI}`);
 mongoose.connect(DB_URI).then(() => {
   console.log('Connected to MongoDB');
   if (require.main === module) {
-    app.listen(PORT, 'localhost', () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on port ${PORT}`);
     });
   }
