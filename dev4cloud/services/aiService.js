@@ -31,6 +31,34 @@ class AiService {
 
     return aiResponse;
   }
+
+
+
+  static async sendDocumentToApi(pdfData, userId, documentId, apiKey) {
+    try {
+        // Create a FormData instance to handle the binary data
+        const formData = new FormData();
+        formData.append('file', pdfData); // 'file' should match the expected field name in the API
+
+        // Make the POST request
+        const response = await axios.post('http://127.0.0.1:8000/api/v1/document', formData, {
+            headers: {
+                'X-Api-Key': apiKey,
+                'Content-Type': 'multipart/form-data' // This tells the server we're sending form data
+            },
+            params: {
+                OwnerId: userId,
+                DocumentId: documentId
+            }
+        });
+
+        console.log('Response:', response.data);
+    } catch (error) {
+        console.error('Error:', error.response ? error.response.data : error.message);
+    }
+}
+
+
 }
 
 module.exports = AiService;

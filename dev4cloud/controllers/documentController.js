@@ -1,6 +1,6 @@
 const Document = require('../models/document');
-const multer = require('multer');
-const upload = multer();
+const AiService = require('../services/aiService');
+
 
 
 exports.getAllDocuments = async (req, res) => {
@@ -27,33 +27,43 @@ exports.getDocumentById = async (req, res) => {
 };
 
 
-exports.createDocument = async (req, res) => {
 
-  const { userId, conversationId, author, title, year, url, isbn, type, tags } = req.body;
-  console.log(req.files[0].buffer)
+exports.createDocument = async (req, res) => {
+  const { userId, conversationId, author, title, year, url, isbn, type, tags, apiKey } = req.body;
 
   try {
-    const pdfData = req.files[0].buffer   
-    console.log(pdfData)
-    const newDocument = new Document({ 
-      userId, 
-      conversationId, 
-      author, 
-      title, 
-      year, 
-      url, 
-      isbn, 
-      type, 
+    const pdfData = req.files[0].buffer; // Hier wird die PDF-Datei aus der Anfrage entnommen
+
+    // Erstelle und speichere das neue Dokument
+    const newDocument = new Document({
+      userId,
+      conversationId,
+      author,
+      title,
+      year,
+      url,
+      isbn,
+      type,
       tags,
-      pdfData 
+      pdfData
     });
 
     await newDocument.save();
-    res.status(201).json({ message: 'Document created successfully' }); // Rückmeldung ohne PDF-Daten
+
+    // Sende das Dokument an die externe API
+    try {
+      const apiResponse = await AiService.sendDocumentToApi(pdfData, userId, newDocument._id, apiKey);
+      console.log('Document sent successfully:', apiResponse);
+      res.status(201).json({ message: 'Document created and sent successfully', apiResponse });
+    } catch (apiError) {
+      console.error('Error sending document to external API:', apiError.message);
+      res.status(500).json({ message: 'Document created but failed to send to external API', error: apiError.message });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 exports.updateDocument = async (req, res) => {
   try {
