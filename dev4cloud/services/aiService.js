@@ -4,14 +4,11 @@ const { ObjectId } = require('mongodb');
 class AiService {
   static async fetchAiResponse(query, userId, conversationId, apiKey, chatHistory) {
     try {
-      // Erstellen der Anfrage-Parameter als Strings
       const userIdStr = userId instanceof ObjectId ? userId.toHexString() : userId;
       const conversationIdStr = conversationId instanceof ObjectId ? conversationId.toHexString() : conversationId;
 
-      // URL mit den Query-Parametern
-      const url = `http://127.0.0.1:8000/api/v1/qa?query=${encodeURIComponent(query)}&user_id=${encodeURIComponent(userIdStr)}&conversation_id=${encodeURIComponent(conversationIdStr)}`;
+      const url = `${process.env.AI_SERVICE_URL}?query=${encodeURIComponent(query)}&user_id=${encodeURIComponent(userIdStr)}&conversation_id=${encodeURIComponent(conversationIdStr)}`;
 
-      // Logging der Anfrage-Details
       console.log('Request URL:', url);
       console.log('Request Headers:', {
         'X-Api-Key': apiKey,
@@ -19,7 +16,6 @@ class AiService {
       });
       console.log('Request Body:', chatHistory);
 
-      // POST-Anfrage durchführen
       const response = await axios.post(url, chatHistory, {
         headers: {
           'X-Api-Key': apiKey,
@@ -56,31 +52,28 @@ class AiService {
 
 
   static async sendDocumentToApi(pdfData, userId, documentId, apiKey) {
-        try {
-            // Create a FormData instance to handle the binary data
-            const formData = new FormData();
-            formData.append('file', pdfData); // 'file' should match the expected field name in the API
+    try {
+      const formData = new FormData();
+      formData.append('file', pdfData);
 
-            // Construct the URL without query parameters
-            const url = 'http://127.0.0.1:8000/api/v1/document';
+      const url = process.env.DOCUMENT_API_URL;
 
-            // Make the POST request
-            const response = await axios.post(url, formData, {
-                headers: {
-                    ...formData.getHeaders(),
-                    'X-Api-Key': apiKey,
-                },
-                params: {
-                    OwnerId: userId,
-                    DocumentId: documentId,
-                },
-            });
+      const response = await axios.post(url, formData, {
+        headers: {
+          ...formData.getHeaders(),
+          'X-Api-Key': apiKey,
+        },
+        params: {
+          OwnerId: userId,
+          DocumentId: documentId,
+        },
+      });
 
-            console.log('Response:', response.data);
-        } catch (error) {
-            console.error('Error:', error.response ? error.response.data : error.message);
-        }
+      console.log('Response:', response.data);
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data : error.message);
     }
+  }
 
 }
 
