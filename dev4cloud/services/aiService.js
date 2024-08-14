@@ -1,11 +1,29 @@
 const axios = require('axios');
+const { ObjectId } = require('mongodb');
 
 class AiService {
-  static async fetchAiResponse(query) {
+  static async fetchAiResponse(query, userId, conversationId, apiKey, chatHistory) {
     try {
-      const response = await axios.post('http://localhost:5000/ai', { query }, {
+      // Erstellen der Anfrage-Parameter als Strings
+      const userIdStr = userId instanceof ObjectId ? userId.toHexString() : userId;
+      const conversationIdStr = conversationId instanceof ObjectId ? conversationId.toHexString() : conversationId;
+
+      // URL mit den Query-Parametern
+      const url = `http://127.0.0.1:8000/api/v1/qa?query=${encodeURIComponent(query)}&user_id=${encodeURIComponent(userIdStr)}&conversation_id=${encodeURIComponent(conversationIdStr)}`;
+
+      // Logging der Anfrage-Details
+      console.log('Request URL:', url);
+      console.log('Request Headers:', {
+        'X-Api-Key': apiKey,
+        'Content-Type': 'application/json',
+      });
+      console.log('Request Body:', chatHistory);
+
+      // POST-Anfrage durchführen
+      const response = await axios.post(url, chatHistory, {
         headers: {
-          'Content-Type': 'application/json'
+          'X-Api-Key': apiKey,
+          'Content-Type': 'application/json',
         }
       });
 
@@ -18,6 +36,9 @@ class AiService {
       throw new Error(`Error fetching AI response: ${error.message}`);
     }
   }
+
+
+
 
   static async fetchAiResponseMock(query) {
     // Simulate a mock response from the AI service
@@ -35,29 +56,31 @@ class AiService {
 
 
   static async sendDocumentToApi(pdfData, userId, documentId, apiKey) {
-    try {
-        // Create a FormData instance to handle the binary data
-        const formData = new FormData();
-        formData.append('file', pdfData); // 'file' should match the expected field name in the API
+        try {
+            // Create a FormData instance to handle the binary data
+            const formData = new FormData();
+            formData.append('file', pdfData); // 'file' should match the expected field name in the API
 
-        // Make the POST request
-        const response = await axios.post('http://127.0.0.1:8000/api/v1/document', formData, {
-            headers: {
-                'X-Api-Key': apiKey,
-                'Content-Type': 'multipart/form-data' // This tells the server we're sending form data
-            },
-            params: {
-                OwnerId: userId,
-                DocumentId: documentId
-            }
-        });
+            // Construct the URL without query parameters
+            const url = 'http://127.0.0.1:8000/api/v1/document';
 
-        console.log('Response:', response.data);
-    } catch (error) {
-        console.error('Error:', error.response ? error.response.data : error.message);
+            // Make the POST request
+            const response = await axios.post(url, formData, {
+                headers: {
+                    ...formData.getHeaders(),
+                    'X-Api-Key': apiKey,
+                },
+                params: {
+                    OwnerId: userId,
+                    DocumentId: documentId,
+                },
+            });
+
+            console.log('Response:', response.data);
+        } catch (error) {
+            console.error('Error:', error.response ? error.response.data : error.message);
+        }
     }
-}
-
 
 }
 

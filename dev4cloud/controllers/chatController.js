@@ -2,9 +2,10 @@ const AiService = require('../services/aiService');
 const Message = require('../models/message');
 const Prompt = require('../models/prompt');
 
+
 exports.getChatResponse = async (req, res) => {
   try {
-    const { query, userId, conversationId } = req.query;
+    const { query, userId, conversationId, apiKey} = req.query;
 
     // Speichern der Benutzeranfrage als Prompt und Nachricht
     await saveUserQuery(query, userId, conversationId);
@@ -12,8 +13,13 @@ exports.getChatResponse = async (req, res) => {
     // Aufruf der Funktion, um Nachrichten abzurufen und die AI-Antwort zu erhalten
     const { chat_history, context } = await fetchChatHistory(conversationId);
 
+    console.log("##################")
+    console.log(chat_history)
+
+
+
     // Aufruf des AI-Services, um die AI-Antwort zu erhalten
-    const aiResponse = await AiService.fetchAiResponseMock(query);
+    const aiResponse = await AiService.fetchAiResponse(query,userId,conversationId,apiKey,chat_history);
 
     // Speichern der AI-Antwort als Nachricht mit der Rolle "ai"
     await saveAiResponse(aiResponse.answer, conversationId, userId);
@@ -58,8 +64,8 @@ async function fetchChatHistory(conversationId) {
     const chat_history = [...userMessages, ...aiMessages].map(message => ({
       role: message.role,
       content: message.content,
-      user_id: message.userId,
-      conversation_id: message.conversationId,
+      user_id: message.userId.toHexString(), // Konvertiere ObjectId zu String
+      conversation_id: message.conversationId.toHexString(), // Konvertiere ObjectId zu String
       timestamp: message.created_at.toISOString()
     }));
 
