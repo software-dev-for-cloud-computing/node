@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { ObjectId } = require('mongodb');
+const FormData = require('form-data');
 
 class AiService {
   static async fetchAiResponse(query, userId, conversationId, apiKey, chatHistory) {
@@ -51,12 +52,25 @@ class AiService {
 
 
 
-  static async sendDocumentToApi(pdfData, userId, documentId, apiKey) {
+  static async sendDocumentToApi(file, userId, documentId, apiKey) {
     try {
       const formData = new FormData();
-      formData.append('file', pdfData);
+      
+      // Append the file directly
+      formData.append('file', file.buffer, {
+        filename: file.originalname,
+        contentType: file.mimetype,
+        knownLength: file.size,
+      });
 
       const url = process.env.DOCUMENT_API_URL;
+
+      // Log the request URL and headers
+      console.log('Request URL:', url);
+      console.log('Request Headers:', {
+        ...formData.getHeaders(),
+        'X-Api-Key': apiKey,
+      });
 
       const response = await axios.post(url, formData, {
         headers: {
@@ -70,8 +84,10 @@ class AiService {
       });
 
       console.log('Response:', response.data);
+      return response.data;
     } catch (error) {
       console.error('Error:', error.response ? error.response.data : error.message);
+      throw new Error(`Error sending document to API: ${error.message}`);
     }
   }
 

@@ -32,6 +32,8 @@ exports.createDocument = async (req, res) => {
   const { userId, conversationId, author, title, year, url, isbn, type, tags, apiKey } = req.body;
 
   try {
+    console.log('##############');
+    console.log(req.files[0]);
     const pdfData = req.files[0].buffer; // Hier wird die PDF-Datei aus der Anfrage entnommen
 
     // Erstelle und speichere das neue Dokument

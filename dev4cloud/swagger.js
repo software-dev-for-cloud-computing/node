@@ -6,5 +6,5 @@ const endpointsFiles = [
 ];
 
 swaggerAutogen(outputFile, endpointsFiles).then(() => {
-  require('./server'); // Starte den Server nach der Generierung
+  require('./app'); // Starte den Server nach der Generierung
 });

@@ -4,12 +4,14 @@ const bodyParser = require('body-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger_output.json');
 const cors = require('cors');
+require('dotenv').config(); // Laden der Umgebungsvariablen
+
 const app = express();
 const upload = multer();
 
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -37,8 +39,4 @@ if (require.main === module) {
     app.listen(PORT, '0.0.0.0', () => {
         console.log(`Server läuft auf Port ${PORT}`);
     });
-
-    
 }
-
-
