@@ -7,7 +7,12 @@ const cors = require('cors');
 require('dotenv').config(); // Laden der Umgebungsvariablen
 
 const app = express();
-const upload = multer();
+
+// Multer-Konfiguration
+const upload = multer({
+    storage: multer.memoryStorage(), // Datein im Speicher halten
+    limits: { fileSize: 10 * 1024 * 1024 } // Maximalgröße der Datei auf 10 MB begrenzen
+});
 
 // Middleware
 app.use(cors({
@@ -16,7 +21,7 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(bodyParser.json());
-app.use(upload.any());  // Multer als Middleware für Dateiuploads
+app.use(bodyParser.urlencoded({ extended: true })); // URL-codierte Daten verarbeiten
 
 // Swagger UI Setup
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

@@ -54,6 +54,7 @@ class AiService {
 
   static async sendDocumentToApi(file, userId, documentId, apiKey) {
     try {
+      console.log('test')
       const formData = new FormData();
       
       // Append the file directly

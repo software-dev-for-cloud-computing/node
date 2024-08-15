@@ -33,8 +33,8 @@ exports.createDocument = async (req, res) => {
 
   try {
     console.log('##############');
-    console.log(req.files[0]);
-    const pdfData = req.files[0].buffer; // Hier wird die PDF-Datei aus der Anfrage entnommen
+    console.log(req.file);
+    const pdfData = req.file.buffer; // Hier wird die PDF-Datei aus der Anfrage entnommen
 
     // Erstelle und speichere das neue Dokument
     const newDocument = new Document({
@@ -54,7 +54,7 @@ exports.createDocument = async (req, res) => {
 
     // Sende das Dokument an die externe API
     try {
-      const apiResponse = await AiService.sendDocumentToApi(pdfData, userId, newDocument._id, apiKey);
+      const apiResponse = await AiService.sendDocumentToApi(req.file, userId, newDocument._id, apiKey);
       console.log('Document sent successfully:', apiResponse);
       res.status(201).json({ message: 'Document created and sent successfully', apiResponse });
     } catch (apiError) {
