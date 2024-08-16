@@ -169,6 +169,66 @@
             "description": "Internal Server Error"
           }
         }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "example": "any"
+                },
+                "conversationId": {
+                  "example": "any"
+                },
+                "author": {
+                  "example": "any"
+                },
+                "title": {
+                  "example": "any"
+                },
+                "year": {
+                  "example": "any"
+                },
+                "url": {
+                  "example": "any"
+                },
+                "isbn": {
+                  "example": "any"
+                },
+                "type": {
+                  "example": "any"
+                },
+                "tags": {
+                  "example": "any"
+                },
+                "apiKey": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/api/documents/{id}": {
@@ -186,9 +246,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
           "404": {
             "description": "Not Found"
           },
@@ -238,16 +295,6 @@
           },
           "500": {
             "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/api/documents/create": {
-      "post": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
           }
         }
       }

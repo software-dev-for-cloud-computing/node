@@ -11,7 +11,7 @@ const documentSchema = new Schema({
   isbn: { type: String },
   type: { type: String, required: true },
   tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
-  pdfData: { type: Buffer }, // Feld für PDF-Daten als Buffer
+  pdfFileId: { type: Schema.Types.ObjectId }, // Feld für GridFS-Datei-ID
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now }
 });

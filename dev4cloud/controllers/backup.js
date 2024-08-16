@@ -38,18 +38,13 @@ exports.getAllDocuments = async (req, res) => {
 // Finde ein Dokument nach ID und gebe es zurück, inklusive PDF-Daten aus GridFS
 exports.getDocumentById = async (req, res) => {
   try {
-    const conn = mongoose.connection;
-    if (conn.readyState !== 1) {
-      return res.status(500).json({ message: 'MongoDB connection is not ready' });
-    }
-    const bucket = new GridFSBucket(conn.db, { bucketName: 'documents' });
-
+    initializeGridFS();
     const document = await Document.findById(req.params.id);
     if (!document) return res.status(404).json({ message: 'Document not found' });
 
     // Wenn das Dokument eine pdfFileId hat, lese die PDF-Daten aus GridFS
     if (document.pdfFileId) {
-      const downloadStream = bucket.openDownloadStream(document.pdfFileId);
+      const downloadStream = gfs.openDownloadStream(document.pdfFileId);
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${document.title}.pdf"`);
       downloadStream.pipe(res);
@@ -88,12 +83,13 @@ exports.createDocument = async (req, res) => {
 
     await newDocument.save();
 
-    try {
-      const apiResponse = await AiService.sendDocumentToApi(req.file, userId, newDocument._id, apiKey);
-      res.status(201).json({ message: 'Document created and sent successfully', apiResponse });
-    } catch (apiError) {
-      res.status(500).json({ message: 'Document created but failed to send to external API', error: apiError.message });
-    }
+    // Sende das Dokument an die externe API
+    // try {
+    //   const apiResponse = await AiService.sendDocumentToApi(req.file, userId, newDocument._id, apiKey);
+    //   res.status(201).json({ message: 'Document created and sent successfully', apiResponse });
+    // } catch (apiError) {
+    //   res.status(500).json({ message: 'Document created but failed to send to external API', error: apiError.message });
+    // }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

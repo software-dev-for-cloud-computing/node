@@ -12,5 +12,6 @@ router.get('/:id', documentController.getDocumentById);
 router.post('/', upload.single('pdf'), documentController.createDocument);
 router.put('/:id', documentController.updateDocument);
 router.delete('/:id', documentController.deleteDocument);
+router.delete('/', documentController.deleteAllDocuments);
 
 module.exports = router;
