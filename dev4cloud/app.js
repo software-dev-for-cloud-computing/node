@@ -15,11 +15,11 @@ const upload = multer({
 });
 
 // Middleware
-app.use(cors({
+/*app.use(cors({
     origin: process.env.CORS_ORIGIN,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+}));*/
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); // URL-codierte Daten verarbeiten
 
