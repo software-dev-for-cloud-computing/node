@@ -52,7 +52,7 @@ class AiService {
 
 
 
-  static async sendDocumentToApi(file, userId, documentId, apiKey) {
+  static async sendDocumentToApi(file, userId, documentId,conversationId, apiKey) {
     try {
       console.log('test')
       const formData = new FormData();
@@ -81,6 +81,7 @@ class AiService {
         params: {
           OwnerId: userId,
           DocumentId: documentId,
+          ConversationId : conversationId,
         },
       });
 

@@ -13,11 +13,6 @@ exports.getChatResponse = async (req, res) => {
     // Aufruf der Funktion, um Nachrichten abzurufen und die AI-Antwort zu erhalten
     const { chat_history, context } = await fetchChatHistory(conversationId);
 
-    console.log("##################")
-    console.log(chat_history)
-
-
-
     // Aufruf des AI-Services, um die AI-Antwort zu erhalten
     const aiResponse = await AiService.fetchAiResponse(query,userId,conversationId,apiKey,chat_history);
 

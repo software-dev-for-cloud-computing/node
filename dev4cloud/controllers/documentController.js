@@ -89,7 +89,7 @@ exports.createDocument = async (req, res) => {
     await newDocument.save();
 
     try {
-      const apiResponse = await AiService.sendDocumentToApi(req.file, userId, newDocument._id, apiKey);
+      const apiResponse = await AiService.sendDocumentToApi(req.file, userId, newDocument._id,conversationId, apiKey);
       res.status(201).json({ message: 'Document created and sent successfully', apiResponse });
     } catch (apiError) {
       res.status(500).json({ message: 'Document created but failed to send to external API', error: apiError.message });
