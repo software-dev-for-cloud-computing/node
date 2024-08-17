@@ -21,7 +21,7 @@ class AiService {
       const userIdStr = userId instanceof ObjectId ? userId.toHexString() : userId;
       const conversationIdStr = conversationId instanceof ObjectId ? conversationId.toHexString() : conversationId;
 
-      const url = `${process.env.AI_SERVICE_URL}?query=${encodeURIComponent(query)}&user_id=${encodeURIComponent(userIdStr)}&conversation_id=${encodeURIComponent(conversationIdStr)}`;
+      const url = `${process.env.AI_SERVICE_URL}?query=${encodeURIComponent(query)}&userId=${encodeURIComponent(userIdStr)}&conversationId=${encodeURIComponent(conversationIdStr)}`;
       
       AiService.logger.info(`Fetching AI response from: ${url}`);
 
