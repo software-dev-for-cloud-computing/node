@@ -25,12 +25,7 @@ exports.getChatResponse = async (req, res) => {
     await saveAiResponse(aiResponse.answer, conversationId, userId);
 
     // Zusammenfügen der AI-Antwort mit vorbereiteten Daten
-    const response = {
-      input: query,
-      chat_history,
-      context,
-      answer: aiResponse.answer
-    };
+    const response = aiResponse
 
     // Rückgabe der Daten als HTTP-Response
     res.json(response);
