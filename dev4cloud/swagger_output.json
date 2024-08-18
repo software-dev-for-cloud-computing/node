@@ -617,6 +617,11 @@
             "name": "apiKey",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "documentId",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {

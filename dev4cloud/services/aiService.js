@@ -16,12 +16,13 @@ class AiService {
     ]
   });
 
-  static async fetchAiResponse(query, userId, conversationId, apiKey, chatHistory) {
+  static async fetchAiResponse(query, userId, conversationId, apiKey, chatHistory, documentId) {
     try {
       const userIdStr = userId instanceof ObjectId ? userId.toHexString() : userId;
       const conversationIdStr = conversationId instanceof ObjectId ? conversationId.toHexString() : conversationId;
 
-      const url = `${process.env.AI_SERVICE_URL}?query=${encodeURIComponent(query)}&userId=${encodeURIComponent(userIdStr)}&conversationId=${encodeURIComponent(conversationIdStr)}`;
+      const url = `${process.env.AI_SERVICE_URL}?query=${encodeURIComponent(query)}&ownerId=${encodeURIComponent(userIdStr)}&conversationId=${encodeURIComponent(conversationIdStr)}&documentId=${encodeURIComponent(documentId)}`;
+
       
       AiService.logger.info(`Fetching AI response from: ${url}`);
 
@@ -84,9 +85,9 @@ class AiService {
           'X-Api-Key': apiKey,
         },
         params: {
-          OwnerId: userId,
-          DocumentId: documentId,
-          ConversationId: conversationId,
+          ownerId: userId,
+          documentId: documentId,
+          conversationId: conversationId,
         },
       });
 

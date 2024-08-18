@@ -5,7 +5,7 @@ const Prompt = require('../models/prompt');
 
 exports.getChatResponse = async (req, res) => {
   try {
-    const { query, userId, conversationId, apiKey} = req.query;
+    const { query, userId, conversationId, apiKey, documentId} = req.query;
 
     // Speichern der Benutzeranfrage als Prompt und Nachricht
     await saveUserQuery(query, userId, conversationId);
@@ -14,7 +14,7 @@ exports.getChatResponse = async (req, res) => {
     const { chat_history, context } = await fetchChatHistory(conversationId);
 
     // Aufruf des AI-Services, um die AI-Antwort zu erhalten
-    const aiResponse = await AiService.fetchAiResponse(query,userId,conversationId,apiKey,chat_history);
+    const aiResponse = await AiService.fetchAiResponse(query,userId,conversationId,apiKey,chat_history,documentId);
 
     // Speichern der AI-Antwort als Nachricht mit der Rolle "ai"
     await saveAiResponse(aiResponse.answer, conversationId, userId);
