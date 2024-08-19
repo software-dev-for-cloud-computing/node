@@ -14,6 +14,9 @@ const upload = multer({
     limits: { fileSize: 10 * 1024 * 1024 } // Maximalgröße der Datei auf 10 MB begrenzen
 });
 
+app.use(cors({
+    origin: '*',
+  }));
 // Middleware
 /*app.use(cors({
     origin: process.env.CORS_ORIGIN,
