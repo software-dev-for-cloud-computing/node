@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+
+//model for tags
 const tagSchema = new Schema({
   name: { type: String, required: true, unique: true },
   description: { type: String },

@@ -1,5 +1,6 @@
 const User = require('../models/user');
 
+//returns all user
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
@@ -9,6 +10,7 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+//returns user with id
 exports.getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -19,6 +21,7 @@ exports.getUserById = async (req, res) => {
   }
 };
 
+//updates user
 exports.updateUser = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -29,6 +32,7 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+//deletes user
 exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);

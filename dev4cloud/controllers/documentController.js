@@ -8,8 +8,7 @@ const { Readable } = require('stream');
 const AiService = require('../services/aiService');
 const conn = mongoose.connection;
 
-
-//neu
+// New: Initialize GridFSBucket if it's not already initialized
 const initializeGridFS = () => {
   if (!gfs) {
     const conn = mongoose.connection;
@@ -17,15 +16,13 @@ const initializeGridFS = () => {
   }
 };
 
-
-//alt
+// Old: Initialize GridFS when the connection is open
 conn.once('open', () => {
   gfs = Grid(conn.db, mongoose.mongo);
   gfs.collection('documents');
 });
 
-
-// Finde und gebe alle Dokumente zurück
+// Fetch and return all documents from the database
 exports.getAllDocuments = async (req, res) => {
   try {
     const documents = await Document.find().populate('conversationId');
@@ -35,7 +32,7 @@ exports.getAllDocuments = async (req, res) => {
   }
 };
 
-// Finde ein Dokument nach ID und gebe es zurück, inklusive PDF-Daten aus GridFS
+// Fetch a document by ID and return it, including PDF data from GridFS if available
 exports.getDocumentById = async (req, res) => {
   try {
     const conn = mongoose.connection;
@@ -47,14 +44,14 @@ exports.getDocumentById = async (req, res) => {
     const document = await Document.findById(req.params.id);
     if (!document) return res.status(404).json({ message: 'Document not found' });
 
-    // Wenn das Dokument eine pdfFileId hat, lese die PDF-Daten aus GridFS
+    // If the document has a pdfFileId, stream the PDF data from GridFS
     if (document.pdfFileId) {
       const downloadStream = bucket.openDownloadStream(document.pdfFileId);
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${document.title}.pdf"`);
       downloadStream.pipe(res);
     } else {
-      // Wenn keine pdfFileId vorhanden ist, schicke das Dokument ohne PDF-Daten
+      // If no pdfFileId is available, send the document without PDF data
       res.json(document);
     }
   } catch (err) {
@@ -63,8 +60,7 @@ exports.getDocumentById = async (req, res) => {
   }
 };
 
-
-// Erstelle ein neues Dokument
+// Create a new document and store it in the database
 exports.createDocument = async (req, res) => {
   const { userId, conversationId, author, title, year, url, isbn, type, tags, apiKey } = req.body;
 
@@ -83,13 +79,14 @@ exports.createDocument = async (req, res) => {
       isbn,
       type,
       tags,
-      pdfFileId: uploadStream.id // Speichern der GridFS-Datei-ID
+      pdfFileId: uploadStream.id // Save the GridFS file ID
     });
 
     await newDocument.save();
 
     try {
-      const apiResponse = await AiService.sendDocumentToApi(req.file, userId, newDocument._id,conversationId, apiKey);
+      // Send the document to an external API
+      const apiResponse = await AiService.sendDocumentToApi(req.file, userId, newDocument._id, conversationId, apiKey);
       res.status(201).json({ message: 'Document created and sent successfully', apiResponse });
     } catch (apiError) {
       res.status(500).json({ message: 'Document created but failed to send to external API', error: apiError.message });
@@ -99,11 +96,7 @@ exports.createDocument = async (req, res) => {
   }
 };
 
-
-
-
-
-// Aktualisiere ein Dokument nach ID
+// Update a document by ID
 exports.updateDocument = async (req, res) => {
   try {
     const document = await Document.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('conversationId');
@@ -114,14 +107,14 @@ exports.updateDocument = async (req, res) => {
   }
 };
 
-// Lösche ein Dokument nach ID und seine zugehörigen PDF-Daten aus GridFS
+// Delete a document by ID and its associated PDF data from GridFS
 exports.deleteDocument = async (req, res) => {
   try {
     initializeGridFS();
     const document = await Document.findByIdAndDelete(req.params.id);
     if (!document) return res.status(404).json({ message: 'Document not found' });
 
-    // Lösche die zugehörigen PDF-Daten aus GridFS, falls vorhanden
+    // Delete associated PDF data from GridFS if available
     if (document.pdfFileId) {
       gfs.delete(document.pdfFileId, (err) => {
         if (err) {
@@ -137,16 +130,16 @@ exports.deleteDocument = async (req, res) => {
   }
 };
 
-// Lösche alle Dokumente und ihre zugehörigen PDF-Daten aus GridFS
+// Delete all documents and their associated PDF data from GridFS
 exports.deleteAllDocuments = async (req, res) => {
   try {
     initializeGridFS();
     const documents = await Document.find();
 
-    // Lösche alle Dokumente aus der MongoDB
+    // Delete all documents from MongoDB
     await Document.deleteMany({});
 
-    // Lösche alle zugehörigen PDF-Dateien aus GridFS
+    // Delete all associated PDF files from GridFS
     documents.forEach(async (document) => {
       if (document.pdfFileId) {
         try {

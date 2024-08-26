@@ -2,46 +2,47 @@ const AiService = require('../services/aiService');
 const Message = require('../models/message');
 const Prompt = require('../models/prompt');
 
-
+// Controller to handle AI chat responses
 exports.getChatResponse = async (req, res) => {
   try {
-    const { query, userId, conversationId, apiKey, documentId} = req.query;
+    const { query, userId, conversationId, apiKey, documentId } = req.query;
 
-    // Speichern der Benutzeranfrage als Prompt und Nachricht
+    // Save the user's query as a prompt and message
     await saveUserQuery(query, userId, conversationId);
 
-    // Aufruf der Funktion, um Nachrichten abzurufen und die AI-Antwort zu erhalten
+    // Fetch chat history and context to assist with AI response
     const { chat_history, context } = await fetchChatHistory(conversationId);
 
-    // Aufruf des AI-Services, um die AI-Antwort zu erhalten
-    const aiResponse = await AiService.fetchAiResponse(query,userId,conversationId,apiKey,chat_history,documentId);
+    // Call AI service to get the AI's response
+    const aiResponse = await AiService.fetchAiResponse(query, userId, conversationId, apiKey, chat_history, documentId);
 
-    // Speichern der AI-Antwort als Nachricht mit der Rolle "ai"
+    // Save the AI response as a message with the role "ai"
     await saveAiResponse(aiResponse.answer, conversationId, userId);
 
-    // Zusammenfügen der AI-Antwort mit vorbereiteten Daten
-    const response = aiResponse
+    // Combine the AI response with any prepared data
+    const response = aiResponse;
 
-    // Rückgabe der Daten als HTTP-Response
+    // Send the response data as the HTTP response
     res.json(response);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
+// Function to fetch chat history from the database
 async function fetchChatHistory(conversationId) {
   try {
-    // Beispiel für die Nachrichtenabfrage aus der Datenbank
+    // Example query to get messages from the database
     const chatHistory = await Message.find({ conversationId })
-      .sort({ created_at: -1 })
-      .limit(6)
+      .sort({ created_at: -1 }) // Sort by creation time in descending order
+      .limit(6) // Limit to the last 6 messages
       .exec();
 
-    // Filterung der neuesten Nachrichten
+    // Filter and categorize the latest messages
     const userMessages = [];
     const aiMessages = [];
 
-    // Durchlaufen der Nachrichten und Aufteilung nach Benutzer und AI
+    // Loop through messages and categorize as user or AI
     chatHistory.forEach(message => {
       if (message.role === 'user' && userMessages.length < 3) {
         userMessages.push(message);
@@ -50,16 +51,16 @@ async function fetchChatHistory(conversationId) {
       }
     });
 
-    // Formatierung der Antwortdaten
+    // Format the response data
     const chat_history = [...userMessages, ...aiMessages].map(message => ({
       role: message.role,
       content: message.content,
-      user_id: message.userId.toHexString(), // Konvertiere ObjectId zu String
-      conversation_id: message.conversationId.toHexString(), // Konvertiere ObjectId zu String
-      timestamp: message.created_at.toISOString()
+      user_id: message.userId.toHexString(), // Convert ObjectId to String
+      conversation_id: message.conversationId.toHexString(), // Convert ObjectId to String
+      timestamp: message.created_at.toISOString() // Format timestamp
     }));
 
-    // Erstellen des Kontexts (hier ein Platzhalter)
+    // Create context (placeholder here)
     const context = [];
 
     return { chat_history, context };
@@ -68,9 +69,10 @@ async function fetchChatHistory(conversationId) {
   }
 }
 
+// Function to save the user's query as a prompt and message
 async function saveUserQuery(query, userId, conversationId) {
   try {
-    // Speichern der Benutzeranfrage als Prompt
+    // Save the user's query as a prompt
     const prompt = new Prompt({
       userId,
       conversationId,
@@ -78,7 +80,7 @@ async function saveUserQuery(query, userId, conversationId) {
     });
     await prompt.save();
 
-    // Speichern der Benutzeranfrage als Nachricht
+    // Save the user's query as a message
     const userMessage = new Message({
       role: 'user',
       content: query,
@@ -91,9 +93,10 @@ async function saveUserQuery(query, userId, conversationId) {
   }
 }
 
+// Function to save the AI's response as a message
 async function saveAiResponse(answer, conversationId, userId) {
   try {
-    // Speichern der AI-Antwort als Nachricht mit der Rolle "ai"
+    // Save the AI's response as a message with the role "ai"
     const aiMessage = new Message({
       role: 'ai',
       content: answer,
@@ -105,4 +108,3 @@ async function saveAiResponse(answer, conversationId, userId) {
     throw new Error(`Error saving AI response: ${error.message}`);
   }
 }
-

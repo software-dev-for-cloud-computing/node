@@ -4,7 +4,6 @@ const chatController = require('../controllers/chatController');
 
 const router = express.Router();
 
-// Create a logger using winston
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -17,7 +16,6 @@ const logger = winston.createLogger({
   ]
 });
 
-// Middleware to log requests
 router.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
@@ -27,7 +25,6 @@ router.use((req, res, next) => {
   next();
 });
 
-// Define the route with logging
 router.get('/response', async (req, res) => {
   try {
     logger.info(`Request received: ${req.method} ${req.originalUrl}`);

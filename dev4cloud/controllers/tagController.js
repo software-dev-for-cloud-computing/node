@@ -1,5 +1,6 @@
 const Tag = require('../models/tag');
 
+//returns all tags
 exports.getAllTags = async (req, res) => {
   try {
     const tags = await Tag.find();
@@ -9,6 +10,7 @@ exports.getAllTags = async (req, res) => {
   }
 };
 
+//returns tag with id
 exports.getTagById = async (req, res) => {
   try {
     const tag = await Tag.findById(req.params.id);
@@ -19,6 +21,7 @@ exports.getTagById = async (req, res) => {
   }
 };
 
+//creates new tag
 exports.createTag = async (req, res) => {
   const { name, description } = req.body;
   try {
@@ -30,6 +33,7 @@ exports.createTag = async (req, res) => {
   }
 };
 
+//updates tag
 exports.updateTag = async (req, res) => {
   try {
     const tag = await Tag.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -40,6 +44,7 @@ exports.updateTag = async (req, res) => {
   }
 };
 
+//deletes tag
 exports.deleteTag = async (req, res) => {
   try {
     const tag = await Tag.findByIdAndDelete(req.params.id);

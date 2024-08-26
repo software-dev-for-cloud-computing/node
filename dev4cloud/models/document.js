@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+//model for documents
 const documentSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   conversationId: { type: Schema.Types.ObjectId, ref: 'Conversation', required: true },

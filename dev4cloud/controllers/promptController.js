@@ -1,6 +1,7 @@
 const Prompt = require('../models/prompt');
 const Message = require('../models/message');
 
+//return all prompts
 exports.getAllPrompts = async (req, res) => {
   try {
     const prompts = await Prompt.find().populate('conversationId');
@@ -10,6 +11,7 @@ exports.getAllPrompts = async (req, res) => {
   }
 };
 
+//returns prompt with id
 exports.getPromptById = async (req, res) => {
   try {
     const prompt = await Prompt.findById(req.params.id).populate('conversationId');
@@ -20,13 +22,13 @@ exports.getPromptById = async (req, res) => {
   }
 };
 
+//creates new prompt
 exports.createPrompt = async (req, res) => {
   const { userId, conversationId, prompt } = req.body;
   try {
     const newPrompt = new Prompt({ userId, conversationId, prompt });
     await newPrompt.save();
 
-    // Erstellen einer entsprechenden Nachricht
     const newMessage = new Message({
       userId,
       conversationId,
@@ -42,6 +44,7 @@ exports.createPrompt = async (req, res) => {
   }
 };
 
+//updates prompt
 exports.updatePrompt = async (req, res) => {
   try {
     const prompt = await Prompt.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('conversationId');
@@ -52,6 +55,7 @@ exports.updatePrompt = async (req, res) => {
   }
 };
 
+//deletes prompt
 exports.deletePrompt = async (req, res) => {
   try {
     const prompt = await Prompt.findByIdAndDelete(req.params.id);
